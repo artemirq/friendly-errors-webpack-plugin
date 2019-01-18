@@ -43,18 +43,12 @@ class FriendlyErrorsWebpackPlugin {
       const hasErrors = stats.hasErrors();
       const hasWarnings = stats.hasWarnings();
 
-      if (!hasErrors && !hasWarnings) {
-        this.displaySuccess(stats);
-        return;
-      }
-
       if (hasErrors) {
-        this.displayErrors(extractErrorsFromStats(stats, 'errors'), 'error');
-        return;
-      }
-
-      if (hasWarnings) {
-        this.displayErrors(extractErrorsFromStats(stats, 'warnings'), 'warning');
+        this.displayErrors(stats);
+      } else if (hasWarnings) {
+        this.displayWarnings(stats);
+      } else {
+        this.displaySuccess(stats);
       }
     };
 
@@ -80,6 +74,38 @@ class FriendlyErrorsWebpackPlugin {
     }
   }
 
+  displayWarnings(stats) {
+    const severity = 'warning';
+
+    const warnings = extractErrorsFromStats(stats, severity + 's');
+
+    const processedErrors = transformErrors(warnings, this.transformers);
+
+    const topErrors = getMaxSeverityErrors(processedErrors);
+
+    const time = isMultiStats(stats) ? this.getMultiStatsCompileTime(stats) : this.getStatsCompileTime(stats);
+
+    if (this.onErrors) {
+      this.onErrors(severity, topErrors);
+    }
+
+    formatErrors(topErrors, this.formatters, severity)
+      .forEach(chunk => output.log(chunk));
+
+    console.log();
+    console.log();
+    output.title(severity, severity.toUpperCase(), `Compiled with ${topErrors.length} warnings in ${time} ms`);
+
+    if (this.compilationSuccessInfo.messages) {
+      this.compilationSuccessInfo.messages.forEach(message => output.info(message));
+    }
+
+    if (this.compilationSuccessInfo.notes) {
+      output.log();
+      this.compilationSuccessInfo.notes.forEach(note => output.note(note));
+    }
+  }
+
   displaySuccess(stats) {
     const time = isMultiStats(stats) ? this.getMultiStatsCompileTime(stats) : this.getStatsCompileTime(stats);
     output.title('success', 'DONE', 'Compiled successfully in ' + time + 'ms');
@@ -87,21 +113,24 @@ class FriendlyErrorsWebpackPlugin {
     if (this.compilationSuccessInfo.messages) {
       this.compilationSuccessInfo.messages.forEach(message => output.info(message));
     }
+
     if (this.compilationSuccessInfo.notes) {
       output.log();
       this.compilationSuccessInfo.notes.forEach(note => output.note(note));
     }
   }
 
-  displayErrors(errors, severity) {
+  displayErrors(stats) {
+    const severity = 'error';
+
+    const errors = extractErrorsFromStats(stats, severity + 's');
+
     const processedErrors = transformErrors(errors, this.transformers);
 
     const topErrors = getMaxSeverityErrors(processedErrors);
-    const nbErrors = topErrors.length;
 
-    const subtitle = severity === 'error' ?
-      `Failed to compile with ${nbErrors} ${severity}s` :
-      `Compiled with ${nbErrors} ${severity}s`;
+    const subtitle = `Failed to compile with ${topErrors.length} ${severity}s`;
+
     output.title(severity, severity.toUpperCase(), subtitle);
 
     if (this.onErrors) {
