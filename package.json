@@ -1,8 +1,9 @@
 {
   "name": "@artemir/friendly-errors-webpack-plugin",
-  "version": "1.8.0",
+  "version": "2.0.1",
   "description": "Recognizes certain classes of webpack errors and cleans, aggregates and prioritizes them to provide a better Developer Experience",
   "main": "index.js",
+  "typings": "index.d.ts",
   "engines": {
     "node": ">=8.0.0"
   },
@@ -11,7 +12,8 @@
   },
   "files": [
     "src",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "keywords": [
     "friendly",
