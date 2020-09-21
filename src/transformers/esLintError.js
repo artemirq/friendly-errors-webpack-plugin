@@ -1,16 +1,16 @@
 'use strict';
 
 function isEslintError (e) {
+  if (e.message.includes("eslint-loader")) {
+    return true;
+  }
+
   return e.originalStack
-    .some(stackframe => stackframe.fileName && stackframe.fileName.indexOf('eslint-loader') > 0);
+    .some(stackframe => stackframe.fileName && stackframe.fileName.includes("eslint-loader"));
 }
 
 function cleanMessage(msg) {
-  if (msg.startsWith('Module Warning')) {
-    return msg.split('\n').slice(1).join('\n').trimLeft();
-  }
-
-  return msg;
+  return msg.replace(/Module (Error|Warning) \(from .+\):\n/, '');
 }
 
 function transform(error) {
