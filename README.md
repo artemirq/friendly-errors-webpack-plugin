@@ -98,7 +98,7 @@ You can pass options to the plugin:
 new FriendlyErrorsPlugin({
   compilationSuccessInfo: {
     messages: ['You application is running here http://localhost:3000'],
-    notes: ['Some additionnal notes to be displayed upon successful compilation']
+    notes: ['Some additional notes to be displayed upon successful compilation']
   },
   onErrors: function (severity, errors) {
     // You can listen to errors transformed and prioritized by the plugin
@@ -120,11 +120,11 @@ The plugin has no native support for desktop notifications but it is easy
 to add them thanks to [node-notifier](https://www.npmjs.com/package/node-notifier) for instance.
 
 ```js
-var NotifierPlugin = require('friendly-errors-webpack-plugin');
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 var notifier = require('node-notifier');
 var ICON = path.join(__dirname, 'icon.png');
 
-new NotifierPlugin({
+new FriendlyErrorsPlugin({
     onErrors: (severity, errors) => {
       if (severity !== 'error') {
         return;
@@ -138,7 +138,6 @@ new NotifierPlugin({
       });
     }
   })
-]
 ```
 
 ## API
