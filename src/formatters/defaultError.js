@@ -29,12 +29,17 @@ function isDefaultError(error) {
   return !error.type;
 }
 
+function isNotSizeLimitWarning(error) {
+  return !(error.name.endsWith('SizeLimitWarning') || error.name === 'NoAsyncChunksWarning');
+}
+
 /**
  * Format errors without a type
  */
 function format(errors, type) {
   return errors
     .filter(isDefaultError)
+    .filter(isNotSizeLimitWarning)
     .reduce((accum, error) => (
       accum.concat(displayError(type, error))
     ), []);
