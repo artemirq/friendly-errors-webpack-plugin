@@ -10,7 +10,7 @@ function isEslintError (e) {
 }
 
 function cleanMessage(msg) {
-  return msg.replace(/Module (Error|Warning) \(from .+\):\n/, '');
+  return msg.replace(/Module (Error|Warning) \(from .+\):\n/, '').trim();
 }
 
 function transform(error) {
